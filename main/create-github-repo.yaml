@@ -1,0 +1,41 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-github-repo
+  title: Create GitHub Repository
+  description: A template to create a GitHub repository using Terraform.
+  tags:
+    - github
+    - terraform
+spec:
+  owner: team@example.com
+  parameters:
+    - title: Repository Details
+      properties:
+        repo_name:
+          title: Repository Name
+          type: string
+          description: Name of the repository to be created.
+        repo_visibility:
+          title: Visibility
+          type: string
+          enum:
+            - private
+            - public
+          description: Visibility of the repository.
+        repo_description:
+          title: Description
+          type: string
+          description: Description of the repository.
+  steps:
+    - id: terraform-apply
+      name: Apply Terraform
+      action: command:run
+      input:
+        command: |
+          terraform init &&
+          terraform apply -var "github_token=$GITHUB_TOKEN" \
+                          -var "repo_name=${{ parameters.repo_name }}" \
+                          -var "repo_visibility=${{ parameters.repo_visibility }}" \
+                          -var "repo_description=${{ parameters.repo_description }}" \
+                          -auto-approve
